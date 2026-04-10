@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +26,7 @@ import com.inquea.inquea.utils.Resource
 
 @Composable
 fun LoginScreen(
+    onNavigateBack: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onLoginSuccess: (String) -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
@@ -71,13 +73,24 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .systemBarsPadding()
     ) {
+        IconButton(
+            onClick = onNavigateBack,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = MaterialTheme.colorScheme.onBackground)
+        }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .align(Alignment.Center)
         ) {
             Text(
                 text = "Bienvenido a Inquea",
@@ -148,25 +161,7 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-            
 
-            Text(
-                text = "O inicia sesión con",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SocialLoginButton(icon = Icons.Default.AccountCircle, label = "Google") {  }
-                Spacer(modifier = Modifier.width(24.dp))
-                SocialLoginButton(icon = Icons.Default.Phone, label = "Teléfono") {  }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
             Row {
                 Text(
                     text = "¿No tienes cuenta? ",

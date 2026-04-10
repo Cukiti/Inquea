@@ -1,5 +1,6 @@
 package com.inquea.inquea.ui.screens.business
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.inquea.inquea.domain.model.BusinessProfile
@@ -20,15 +21,9 @@ class BusinessProfileViewModel @Inject constructor(
     private val _saveState = MutableStateFlow<Resource<Unit>?>(null)
     val saveState: StateFlow<Resource<Unit>?> = _saveState.asStateFlow()
 
-    fun saveProfile(name: String, specialty: String, location: String, description: String) {
-        val profile = BusinessProfile(
-            name = name,
-            specialty = specialty,
-            location = location,
-            description = description
-        )
+    fun updateProfile(specialty: String, description: String, mediaUri: Uri?, isVideo: Boolean) {
         viewModelScope.launch {
-            repository.saveBusinessProfile(profile).collect { result ->
+            repository.updateBusinessProfile(specialty, description, mediaUri, isVideo).collect { result ->
                 _saveState.value = result
             }
         }

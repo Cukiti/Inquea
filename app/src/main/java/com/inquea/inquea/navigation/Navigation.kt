@@ -80,6 +80,9 @@ fun AppNavigation() {
         }
         composable(Screen.Login.route) {
             LoginScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
                 onNavigateToRegister = {
                     navController.navigate(Screen.Register.createRoute(false))
                 },
@@ -148,6 +151,9 @@ fun AppNavigation() {
                 },
                 onNavigateToResolution = {
                     navController.navigate(Screen.ResolutionCenter.route)
+                },
+                onNavigateToChat = { chatId ->
+                    navController.navigate(Screen.ChatDetail.createRoute(chatId))
                 }
             )
         }

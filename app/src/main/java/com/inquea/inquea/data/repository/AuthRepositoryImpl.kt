@@ -1,6 +1,9 @@
 package com.inquea.inquea.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.inquea.inquea.domain.model.UserProfile
 import com.inquea.inquea.domain.repository.AuthRepository
@@ -25,10 +28,14 @@ class AuthRepositoryImpl @Inject constructor(
                 val role = doc.getString("role") ?: "client"
                 emit(Resource.Success(role))
             } else {
-                emit(Resource.Error("User ID is null"))
+                emit(Resource.Error("El ID de usuario es nulo"))
             }
+        } catch (e: FirebaseAuthInvalidUserException) {
+            emit(Resource.Error("El correo electrónico no está registrado."))
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            emit(Resource.Error("El correo electrónico o la contraseña son incorrectos."))
         } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "An unknown error occurred"))
+            emit(Resource.Error("Ocurrió un error desconocido al iniciar sesión."))
         }
     }
 
@@ -75,10 +82,14 @@ class AuthRepositoryImpl @Inject constructor(
                 
                 emit(Resource.Success(role))
             } else {
-                emit(Resource.Error("User ID is null"))
+                emit(Resource.Error("El ID de usuario es nulo"))
             }
+        } catch (e: FirebaseAuthUserCollisionException) {
+            emit(Resource.Error("El correo electrónico ya está en uso por otra cuenta."))
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            emit(Resource.Error("La contraseña es muy débil o el formato de correo es inválido."))
         } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "An unknown error occurred"))
+            emit(Resource.Error("Ocurrió un error desconocido al registrarse."))
         }
     }
 
@@ -94,7 +105,7 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Success(null))
             }
         } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "An unknown error occurred"))
+            emit(Resource.Error("Error al obtener el rol del usuario."))
         }
     }
 
@@ -110,7 +121,7 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Success(null))
             }
         } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "An unknown error occurred"))
+            emit(Resource.Error("Error al obtener el perfil del usuario."))
         }
     }
 

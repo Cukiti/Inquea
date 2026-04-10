@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -23,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.inquea.inquea.ui.screens.auth.AuthViewModel
 import com.inquea.inquea.utils.Resource
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen(
@@ -35,38 +38,48 @@ fun SplashScreen(
     val alpha = remember { Animatable(0f) }
     
     val roleState by viewModel.roleState.collectAsState()
+    var animationFinished by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
         viewModel.checkCurrentUserRole()
-        scale.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 800,
-                easing = FastOutSlowInEasing
+        launch {
+            scale.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = 800,
+                    easing = FastOutSlowInEasing
+                )
             )
-        )
-        alpha.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(
-                durationMillis = 500,
-                easing = FastOutSlowInEasing
+        }
+        launch {
+            alpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = 500,
+                    easing = FastOutSlowInEasing
+                )
             )
-        )
+        }
         delay(1500)
-        
-        when (roleState) {
-            is Resource.Success -> {
-                val role = (roleState as Resource.Success).data
-                if (role == "business") {
-                    onNavigateToBusiness()
-                } else if (role == "client") {
-                    onNavigateToClient()
-                } else {
-                    onNavigateToOnboarding()
+        animationFinished = true
+    }
+    
+    LaunchedEffect(roleState, animationFinished) {
+        if (animationFinished && roleState != null && roleState !is Resource.Loading) {
+            when (val state = roleState) {
+                is Resource.Success -> {
+                    val role = state.data
+                    if (role == "business") {
+                        onNavigateToBusiness()
+                    } else if (role == "client") {
+                        onNavigateToClient()
+                    } else {
+                        onNavigateToOnboarding()
+                    }
                 }
+                is Resource.Error -> onNavigateToOnboarding()
+                else -> onNavigateToOnboarding()
             }
-            is Resource.Error -> onNavigateToOnboarding()
-            else -> onNavigateToOnboarding()
         }
     }
 

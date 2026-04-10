@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.inquea.inquea.ui.components.GlassCard
+import com.inquea.inquea.ui.screens.chat.ChatListScreen
 import com.inquea.inquea.ui.screens.profile.ProfileScreen
 
 @Composable
@@ -24,7 +25,8 @@ fun BusinessMainScreen(
     onNavigateToUpload: () -> Unit,
     onNavigateToFlashOffer: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
-    onNavigateToResolution: () -> Unit = {}
+    onNavigateToResolution: () -> Unit = {},
+    onNavigateToChat: (String) -> Unit = {}
 ) {
     var selectedTab by remember { mutableStateOf("Dashboard") }
 
@@ -131,6 +133,10 @@ fun BusinessMainScreen(
             }
         } else if (selectedTab == "Agenda") {
             BusinessAgendaScreen(modifier = Modifier.padding(paddingValues))
+        } else if (selectedTab == "Mensajes") {
+            Box(modifier = Modifier.padding(paddingValues)) {
+                ChatListScreen(onChatClick = onNavigateToChat)
+            }
         } else if (selectedTab == "Perfil") {
             Box(modifier = Modifier.padding(paddingValues)) {
                 ProfileScreen(

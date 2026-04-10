@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1075046709148",
+    "project_id": "inquea-d9e60",
+    "storage_bucket": "inquea-d9e60.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075046709148:android:a139d08aed8fcf1bb63a59",
+        "android_client_info": {
+          "package_name": "com.inquea.inquea"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU5NVWP9DkGpbNLI_CYivH7gnBDCmCSig"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

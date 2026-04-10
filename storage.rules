@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// Craft rules based on data in your Firestore database
+// allow write: if firestore.get(
+//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Profile Pictures (if added later): Users can read all, but only write their own
+    match /profiles/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Reels (Videos): Anyone authenticated can view reels. Only the business owner can upload/delete their reels.
+    // We restrict the file type to video and limit size (e.g., 50MB)
+    match /reels/{userId}/{reelId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+                   request.auth.uid == userId &&
+                   request.resource.contentType.matches('video/.*') &&
+                   request.resource.size < 50 * 1024 * 1024; // 50MB max
+    }
+  }
+}

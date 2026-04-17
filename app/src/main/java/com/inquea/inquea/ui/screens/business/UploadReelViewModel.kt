@@ -20,10 +20,10 @@ class UploadReelViewModel @Inject constructor(
     private val _uploadState = MutableStateFlow<Resource<Unit>?>(null)
     val uploadState: StateFlow<Resource<Unit>?> = _uploadState.asStateFlow()
 
-    fun uploadReel(videoUri: Uri, title: String, tagsString: String) {
+    fun uploadReel(mediaUri: Uri, title: String, tagsString: String, isVideo: Boolean) {
         val tags = tagsString.split(" ").map { it.removePrefix("#") }.filter { it.isNotBlank() }
         viewModelScope.launch {
-            repository.uploadReel(videoUri, title, tags).collect { result ->
+            repository.uploadReel(mediaUri, title, tags, isVideo).collect { result ->
                 _uploadState.value = result
             }
         }

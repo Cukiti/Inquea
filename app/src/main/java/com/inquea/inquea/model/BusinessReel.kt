@@ -8,7 +8,8 @@ data class BusinessReel(
     val rating: Float = 5.0f,
     val specialty: String = "",
     val tags: List<String> = emptyList(),
-    val videoUrl: String = "",
+    val mediaUrl: String = "",
+    val isVideo: Boolean = true,
     val hasFlashOffer: Boolean = false,
     val timestamp: Long = System.currentTimeMillis()
 )

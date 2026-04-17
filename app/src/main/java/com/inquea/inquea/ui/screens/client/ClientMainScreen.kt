@@ -17,10 +17,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.inquea.inquea.model.BusinessReel
 import com.inquea.inquea.ui.components.VideoPlayer
 import com.inquea.inquea.ui.screens.search.SearchRadarScreen
@@ -77,7 +79,7 @@ fun ClientMainScreen(
                             val reels = (feedState as Resource.Success<List<BusinessReel>>).data ?: emptyList()
                             if (reels.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text(text = "Aún no hay reels disponibles", color = Color.White)
+                                    Text(text = "Aún no hay publicaciones disponibles", color = Color.White)
                                 }
                             } else {
                                 val pagerState = rememberPagerState(pageCount = { reels.size })
@@ -89,7 +91,11 @@ fun ClientMainScreen(
                                     ReelItem(
                                         reel = reels[page],
                                         isPlaying = isVisible,
-                                        onInteraction = onAuthRequired,
+                                        onInteraction = { 
+                                            if (com.google.firebase.auth.FirebaseAuth.getInstance().currentUser == null) {
+                                                onAuthRequired()
+                                            }
+                                        },
                                         onBookClick = { onNavigateToBooking(reels[page].businessId) },
                                         onMessageClick = { viewModel.startChat(reels[page].businessId, reels[page].businessName) }
                                     )
@@ -106,6 +112,9 @@ fun ClientMainScreen(
                 }
                 "Busqueda" -> {
                     SearchRadarScreen()
+                }
+                "Reservas" -> {
+                    ClientBookingsScreen()
                 }
                 "Chat" -> {
                     ChatListScreen(onChatClick = onNavigateToChat)
@@ -167,11 +176,20 @@ fun ReelItem(
     onMessageClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        VideoPlayer(
-            videoUrl = reel.videoUrl,
-            isPlaying = isPlaying,
-            modifier = Modifier.fillMaxSize()
-        )
+        if (reel.isVideo) {
+            VideoPlayer(
+                videoUrl = reel.mediaUrl,
+                isPlaying = isPlaying,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            AsyncImage(
+                model = reel.mediaUrl,
+                contentDescription = "Business media",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -184,7 +202,7 @@ fun ReelItem(
                 )
         )
         
-        // RF-19 Flash Offer Badge
+        // Flash Offer Badge
         if (reel.hasFlashOffer) {
             Row(
                 modifier = Modifier

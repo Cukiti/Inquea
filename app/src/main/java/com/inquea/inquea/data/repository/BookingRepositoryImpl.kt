@@ -47,4 +47,25 @@ class BookingRepositoryImpl @Inject constructor(
             listenerRegistration.remove()
         }
     }
+
+    override fun getClientBookings(clientId: String): Flow<Resource<List<Booking>>> = callbackFlow {
+        trySend(Resource.Loading())
+        val listenerRegistration = firestore.collection("bookings")
+            .whereEqualTo("clientId", clientId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    trySend(Resource.Error(error.message ?: "Unknown error"))
+                    return@addSnapshotListener
+                }
+                
+                if (snapshot != null) {
+                    val bookings = snapshot.documents.mapNotNull { it.toObject(Booking::class.java) }
+                    trySend(Resource.Success(bookings))
+                }
+            }
+            
+        awaitClose {
+            listenerRegistration.remove()
+        }
+    }
 }

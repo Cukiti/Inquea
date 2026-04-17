@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface BookingRepository {
     fun createBooking(booking: Booking): Flow<Resource<Unit>>
     fun getBusinessBookings(businessId: String): Flow<Resource<List<Booking>>>
+    fun getClientBookings(clientId: String): Flow<Resource<List<Booking>>>
 }

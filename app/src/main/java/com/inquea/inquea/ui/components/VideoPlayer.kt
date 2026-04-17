@@ -25,9 +25,12 @@ fun VideoPlayer(
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
             repeatMode = Player.REPEAT_MODE_ONE
-            setMediaItem(MediaItem.fromUri(videoUrl))
-            prepare()
         }
+    }
+
+    LaunchedEffect(videoUrl) {
+        exoPlayer.setMediaItem(MediaItem.fromUri(videoUrl))
+        exoPlayer.prepare()
     }
 
     LaunchedEffect(isPlaying) {

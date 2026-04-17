@@ -39,6 +39,12 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    /* 
+     * ==========================================
+     * 👨‍💻 DESARROLLADO POR: ANDERSON
+     * ⚙️ MÓDULO: AuthRepositoryImpl & Arquitectura
+     * ==========================================
+     */
     override fun register(
         email: String, 
         password: String, 

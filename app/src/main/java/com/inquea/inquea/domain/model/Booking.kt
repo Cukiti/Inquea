@@ -8,5 +8,7 @@ data class Booking(
     val date: String = "",
     val time: String = "",
     val service: String = "",
-    val status: String = "Pending" // Pending, Confirmed, Cancelled
+    val status: String = "Pending", // Pending, Confirmed, Cancelled
+    val price: Double = 25.0, // Hardcoded for prototype
+    val paidWithCukitis: Boolean = false // Integración de moneda premium
 )

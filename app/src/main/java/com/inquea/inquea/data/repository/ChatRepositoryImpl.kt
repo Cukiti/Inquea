@@ -104,6 +104,12 @@ class ChatRepositoryImpl @Inject constructor(
         }
     }
     
+    /* 
+     * ==========================================
+     * 👩‍💻 DESARROLLADO POR: SORIANNY
+     * 💬 MÓDULO: Chat P2P y Tiempo Real (Flows)
+     * ==========================================
+     */
     override fun createOrGetChat(businessId: String, businessName: String): Flow<Resource<String>> = flow {
         emit(Resource.Loading())
         try {

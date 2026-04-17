@@ -55,7 +55,12 @@ fun ChatListScreen(
             }
             is Resource.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Error al cargar los chats", color = Color.White)
+                    val errorMessage = (chatsState as Resource.Error).message ?: "Error al cargar los chats"
+                    Text(
+                        text = "Error: $errorMessage",
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
             }
             is Resource.Success -> {

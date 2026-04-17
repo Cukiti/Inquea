@@ -20,6 +20,12 @@ import com.inquea.inquea.ui.components.GlassCard
 import com.inquea.inquea.ui.components.PremiumButton
 
 @OptIn(ExperimentalMaterial3Api::class)
+/* 
+ * ==========================================
+ * 👩‍💻 DESARROLLADO POR: NESSARY
+ * 🎨 MÓDULO: UI/UX, Pagos, Reservas y Feed
+ * ==========================================
+ */
 @Composable
 fun PaymentScreen(
     onNavigateBack: () -> Unit,
@@ -102,6 +108,18 @@ fun PaymentScreen(
                     label = "Google Pay",
                     isSelected = selectedMethod == "google_pay",
                     onClick = { selectedMethod = "google_pay" }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                PaymentMethodOption(
+                    label = "Cukitis (Moneda Premium)",
+                    isSelected = selectedMethod == "cukitis",
+                    onClick = { selectedMethod = "cukitis" }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                PaymentMethodOption(
+                    label = "Centro de Resoluciones",
+                    isSelected = false, // No se puede seleccionar
+                    onClick = { /* No hace nada, como se solicitó */ }
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

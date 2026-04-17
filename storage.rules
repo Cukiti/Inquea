@@ -23,8 +23,8 @@ service firebase.storage {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && 
                    request.auth.uid == userId &&
-                   request.resource.contentType.matches('video/.*') &&
-                   request.resource.size < 50 * 1024 * 1024; // 50MB max
+                   (request.resource == null || request.resource.contentType.matches('video/.*') || request.resource.contentType.matches('image/.*')) &&
+                   (request.resource == null || request.resource.size < 50 * 1024 * 1024); // 50MB max
     }
   }
 }

@@ -9,18 +9,23 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.inquea.inquea.ui.components.PremiumButton
 import com.inquea.inquea.ui.components.PremiumTextField
+import com.inquea.inquea.ui.components.VideoPlayer
 import com.inquea.inquea.utils.Resource
 
 @Composable
@@ -31,14 +36,20 @@ fun UploadReelScreen(
 ) {
     var title by remember { mutableStateOf("") }
     var tags by remember { mutableStateOf("") }
-    var videoUri by remember { mutableStateOf<Uri?>(null) }
+    var mediaUri by remember { mutableStateOf<Uri?>(null) }
+    var isVideo by remember { mutableStateOf(true) }
     
+    val context = LocalContext.current
     val uploadState by viewModel.uploadState.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        videoUri = uri
+        mediaUri = uri
+        if (uri != null) {
+            val mimeType = context.contentResolver.getType(uri)
+            isVideo = mimeType?.startsWith("video/") == true
+        }
     }
 
     LaunchedEffect(uploadState) {
@@ -53,20 +64,21 @@ fun UploadReelScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(24.dp)
+            .systemBarsPadding()
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "Subir Nuevo Reel",
+                text = "Crear Publicación",
                 color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Máximo 10 segundos por video",
+                text = "Sube una imagen o video corto",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
@@ -79,7 +91,7 @@ fun UploadReelScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color.DarkGray)
                     .clickable(enabled = uploadState !is Resource.Loading) {
-                        launcher.launch("video/*")
+                        launcher.launch("*/*")
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -89,16 +101,38 @@ fun UploadReelScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = "Subiendo...", color = Color.White)
                     }
-                } else if (videoUri != null) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(48.dp))
-                        Text(text = "Video Seleccionado", color = MaterialTheme.colorScheme.primary)
-                        Text(text = "Toca para cambiar", color = Color.LightGray, fontSize = 12.sp)
+                } else if (mediaUri != null) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (isVideo) {
+                            VideoPlayer(
+                                videoUrl = mediaUri.toString(),
+                                isPlaying = true,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            AsyncImage(
+                                model = mediaUri,
+                                contentDescription = "Preview",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.4f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+                                Text(text = "Toca para cambiar", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
                     }
                 } else {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(48.dp))
-                        Text(text = "Seleccionar Video", color = Color.White)
+                        Text(text = "Seleccionar Archivo", color = Color.White)
                     }
                 }
             }
@@ -128,10 +162,10 @@ fun UploadReelScreen(
             }
 
             PremiumButton(
-                text = if (uploadState is Resource.Loading) "Subiendo..." else "Publicar Reel",
+                text = if (uploadState is Resource.Loading) "Subiendo..." else "Publicar",
                 onClick = { 
-                    if (videoUri != null && title.isNotEmpty() && uploadState !is Resource.Loading) {
-                        viewModel.uploadReel(videoUri!!, title, tags)
+                    if (mediaUri != null && title.isNotEmpty() && uploadState !is Resource.Loading) {
+                        viewModel.uploadReel(mediaUri!!, title, tags, isVideo)
                     }
                 }
             )
